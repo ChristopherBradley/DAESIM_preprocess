@@ -1,3 +1,10 @@
+.DS_Store
+tmpdir
+outdir
+terrain_tiles.xml
+
+### Default python gitignore below here ###
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
