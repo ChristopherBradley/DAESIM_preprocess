@@ -29,7 +29,9 @@ dependencies = [
 dev = [
     "jupyter",
     "jupytext",
-    "pytest"
+    "pytest",
+    "twine",
+    "build"
 ]
 
 [project.urls]

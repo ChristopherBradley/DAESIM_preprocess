@@ -11,3 +11,9 @@ Harvesting environmental forcing data for running the Dynamic Agro-Ecosystem Sim
 6. conda env create -f environment.yml
 7. conda activate DAESIM_preprocess
 8. pytest
+
+# Uploading to pypi
+1. python3 -m build
+2. twine upload dist/*
+3. Enter the API token
+4. Check it out at https://pypi.org/project/DAESIM-preprocess
