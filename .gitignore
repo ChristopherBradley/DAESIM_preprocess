@@ -2,6 +2,10 @@
 tmpdir
 outdir
 terrain_tiles.xml
+dist_old_versions
+*.nc
+*.png
+
 
 ### Default python gitignore below here ###
 

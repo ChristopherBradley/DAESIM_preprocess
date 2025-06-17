@@ -60,7 +60,7 @@ def ozwald_8day_singleyear_thredds(var="Ssoil", latitude=-34.3890427, longitude=
             return None
     else:
         url = f"https://thredds.nci.org.au/thredds/dodsC/ub8/au/OzWALD/8day/{var}/OzWALD.{var}.{year}.nc"
-        ds = xr.open_dataset(url)
+        ds = xr.open_dataset(url)  # Need to have pip installed netcdf4 for this to work
     
     if not ds: return None
 
@@ -193,35 +193,3 @@ if __name__ == '__main__':
     plot = args.plot
 
     ozwald_8day([variable], lat, lon, buffer, start_year, end_year, outdir, stub, tmpdir, thredds=thredds, plot=plot)
-
-
-
-
-var = 'BS'
-latitude=-34.3890427 
-longitude=148.469499
-buffer=0.01
-year=2020
-
-# +
-north = latitude + buffer 
-south = latitude - buffer 
-west = longitude - buffer
-east = longitude + buffer
-
-time_start = f"{year}-01-01"
-time_end = f"{year}-12-31"
-
-base_url = "https://thredds.nci.org.au"
-url = f'{base_url}/thredds/ncss/grid/ub8/au/OzWALD/8day/{var}/OzWALD.{var}.{year}.nc?var={var}&north={north}&west={west}&east={east}&south={south}&time_start={time_start}&time_end={time_end}' 
-
-# -
-
-north, east, south, west
-
-url
-
-ds = ozwald_8day_singleyear_thredds(var="BS")
-ds
-
-
