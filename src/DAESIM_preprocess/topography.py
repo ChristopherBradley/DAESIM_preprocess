@@ -85,14 +85,16 @@ def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=
     ----------
         outdir: The directory to save the topographic variables.
         stub: The name to be prepended to each file download.
-        smooth: boolean to determine whether to apply a gaussian filter to the elevation before deriving topographic variables. 
+        smooth: Boolean to determine whether to apply a gaussian filter to the elevation before deriving topographic variables. 
                 This is necessary when using terrain tiles to remove artifacts from the elevation being stored as ints.
         sigma: smoothing parameter to use for the gaussian filter. Not used if smooth=False. 
         ds: The output of terrain_tiles so that you don't have to re-load the tif again.
+        save_tifs: Boolean to determine whether to write the data to files
+        verbose: Boolean for extra print statements about progress
     
-    Downloads
+    Returns
     ---------
-        Tiff files of aspect, slope, accumulation and TWI.
+        ds: An xarray containing the aspect, slope, accumulation and TWI.
 
     """
     print(f"Starting topography.py")

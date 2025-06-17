@@ -5,7 +5,7 @@ terrain_tiles.xml
 dist_old_versions
 *.nc
 *.png
-
+*.tif
 
 ### Default python gitignore below here ###
 
