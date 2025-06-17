@@ -12,6 +12,11 @@ Harvesting environmental forcing data for running the Dynamic Agro-Ecosystem Sim
 7. conda activate DAESIM_preprocess
 8. pytest
 
+- If in future there is an issue with dependency conflicts, then try creating a new python environment in 3.11 and using the requirements.txt which has fixed versions (instead of just using the latest version with pyproject.toml).
+  - conda create --name DAESIM_preprocess_3.11 python=3.11
+  - conda activate DAESIM_preprocess_3.11
+  - pip install -r requirements.txt
+
 # Uploading to pypi
 1. python3 -m build
 2. twine upload dist/*
