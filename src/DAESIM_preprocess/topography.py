@@ -12,6 +12,11 @@ import xarray as xr
 import rioxarray as rxr
 from scipy.ndimage import gaussian_filter
 
+import matplotlib.pyplot as plt
+from matplotlib import colors
+from matplotlib.font_manager import FontProperties
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
+
 topographic_variables = ['accumulation', 'aspect', 'slope', 'twi']
 
 # +
@@ -76,8 +81,83 @@ def add_numpy_band(ds, variable, array, affine, resampling_method):
     ds[variable] = reprojected
     return ds
 
+def plot_topography(ds, outdir='.', stub='Test'):
+    """Create 4 side by side plots of elevation, accumulation, aspect, slope"""
+    # Reproject to World Geodetic System
+    ds = ds.rio.reproject("EPSG:4326")
+    left, bottom, right, top = ds.rio.bounds()
+    extent = (left, right, bottom, top)
+    
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+    (ax1, ax2), (ax3, ax4) = axes
+    
+    # ===== Elevation Plot =====
+    dem = ds['terrain']
+    im = ax1.imshow(dem, cmap='terrain', interpolation='bilinear', extent=extent)
+    ax1.set_title("Elevation")
+    plt.colorbar(im, ax=ax1, label='height above sea level (m)')
+    
+    # Contours
+    interval = 10
+    contour_levels = np.arange(np.floor(np.nanmin(dem)), np.ceil(np.nanmax(dem)), interval)
+    contours = ax1.contour(dem, levels=contour_levels, colors='black',
+                           linewidths=0.5, alpha=0.5, extent=extent, origin='upper')
+    ax1.clabel(contours, inline=True, fontsize=8, fmt='%1.0f')
+    
+    # Scale bar
+    scalebar = AnchoredSizeBar(ax1.transData, 0.01, '1km', loc='lower left', pad=0.1,
+                               color='black', frameon=False, size_vertical=0.0001,
+                               fontproperties=FontProperties(size=12))
+    ax1.add_artist(scalebar)
+    
+    # North arrow
+    ax1.annotate('N',
+                 xy=(0.95, 0.1), xycoords='axes fraction',   # Arrow tip (higher position)
+                 xytext=(0.95, 0.04),                         # Arrow base (lower position)
+                 arrowprops=dict(facecolor='black', width=5, headwidth=12),
+                 ha='center', va='center',
+                 fontsize=12, fontweight='bold', color='black')
+    
+    # ===== Accumulation Plot =====
+    acc = ds['accumulation']
+    im = ax2.imshow(acc, cmap='cubehelix', norm=colors.LogNorm(1, np.nanmax(acc)),
+                    interpolation='bilinear', extent=extent)
+    ax2.set_title("Accumulation")
+    plt.colorbar(im, ax=ax2, label='upstream cells')
+    
+    # ===== Aspect Plot =====
+    arcgis_dirs = np.array([1, 2, 4, 8, 16, 32, 64, 128]) 
+    sequential_dirs = np.array([1, 2, 3, 4, 5, 6, 7, 8]) 
+    fdir = ds['aspect']
+    fdir_equal_spacing = np.zeros_like(fdir)  
+    for arcgis_dir, sequential_dir in zip(arcgis_dirs, sequential_dirs):
+        fdir_equal_spacing[fdir == arcgis_dir] = sequential_dir 
+    
+    im = ax3.imshow(fdir_equal_spacing, cmap="twilight_shifted", origin="upper", extent=extent)
+    ax3.set_title("Aspect")
+    cbar = plt.colorbar(im, ax=ax3)
+    cbar.set_ticks(sequential_dirs)
+    cbar.set_ticklabels(["E", "SE", "S", "SW", "W", 'NW', "N", "NE"])
+    
+    # ===== Slope Plot =====
+    slope = ds['slope']
+    im = ax4.imshow(slope, cmap="YlGn", origin="upper", extent=extent)
+    ax4.set_title("Slope")
+    cbar = plt.colorbar(im, ax=ax4)
+    cbar.set_label("degrees")
+    
+    # Add lat/lon labels
+    for ax in [ax1, ax2, ax3, ax4]:
+        ax.set_xlabel("Longitude")
+        ax.set_ylabel("Latitude")
+    
+    # Save combined figure
+    plt.tight_layout()
+    filepath = os.path.join(outdir, stub + "_topography.png")
+    plt.savefig(filepath, dpi=300)
+    print(f"Saved: {filepath}")
 
-def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=True, verbose=True):
+def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=True, verbose=True, plot=True):
     """Derive topographic variables from the elevation. 
     This function assumes there already exists a file named (outdir)/(stub)_terrain.tif"
     
@@ -91,6 +171,7 @@ def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=
         ds: The output of terrain_tiles so that you don't have to re-load the tif again.
         save_tifs: Boolean to determine whether to write the data to files
         verbose: Boolean for extra print statements about progress
+        plot: Save a png file of the topographic variables (not geolocated, but can be opened in Preview)
     
     Returns
     ---------
@@ -142,7 +223,10 @@ def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=
             ds[topographic_variable].rio.to_raster(filepath)
             if verbose:
                 print("Saved:", filepath)
-            
+
+    if plot:
+        plot_topography(ds, outdir, stub)
+
     return ds
 
 
@@ -155,7 +239,8 @@ def parse_arguments():
     parser.add_argument('--stub', default='TEST', help='The name to be prepended to each file download. (default: TEST)')
     parser.add_argument('--smooth', default=False, action="store_true", help='boolean to determine whether to apply a gaussian filter to the elevation before deriving topographic variables. (default: False)')
     parser.add_argument('--sigma', default='5', help='Smoothing parameter to use for the gaussian filter. Not used if smooth=False (default: 5)')
-    
+    parser.add_argument('--plot', default=False, action="store_true", help="Save a png of the topographic variables that isn't geolocated but can be opened in Preview (default: False)")
+
     return parser.parse_args()
 # -
 
@@ -166,5 +251,6 @@ if __name__ == '__main__':
     stub = args.stub
     smooth = args.smooth
     sigma = args.sigma
+    plot = args.plot
 
-    topography(outdir, stub, smooth, sigma)
+    topography(outdir, stub, smooth, sigma, plot=plot)
