@@ -2,7 +2,7 @@
 Harvesting environmental forcing data for running the Dynamic Agro-Ecosystem Simulator (DAESIM). 
 
 # Jupyter Notebook Examples
-I've made some demo notebooks. These can all be run directly in Google Colab like this:  
+I've made some demo notebooks and these can all be run directly in Google Colab like this:  
 
 Click [Google Colab](https://colab.google/) > Open Colab > Sign In (just requires a google account) > GitHub >   
 search for 'ChristopherBradley' and select a notebook.
@@ -32,7 +32,7 @@ Then uncomment the line '!pip install daesim-preprocess' and run each cell in se
 - SN: Snow  
 - Ssoil: Soil profile moisture change  
 
-**ozwald_daily.py** can download these climate variables modelled at varying spatial resolutions (500m-5km depending on the variable) and daily temporal resolution, from Australian Water and Landscape Dynamics ([OzWALD](https://geonetwork.nci.org.au/geonetwork/srv/eng/catalog.search#/metadata/f9589_2733_2545_4343)). 
+**ozwald_daily.py** can download these climate variables modelled at varying spatial resolutions (500m-5km depending on the variable) and daily temporal resolution, also from OzWald. 
 - Pg : Gross precipitation     
 - Tmax : Maximum temperature       
 - Tmin : Minimum temperature      
@@ -53,7 +53,7 @@ Then uncomment the line '!pip install daesim-preprocess' and run each cell in se
 - evap_syn: Synthetic estimate, mm
 - evap_morton_lake: Morton's shallow lake evaporation, mm  
 - radiation: Solar radiation: Solar exposure, consisting of both direct and diffuse components, MJ/m2  
-- rh_tmax: Relative humidity:	Relative humidity at the time of maximum temperature, %  
+- rh_tmax: Relative humidity at the time of maximum temperature, %  
 - rh_tmin: Relative humidity at the time of minimum temperature, %  
 - et_short_crop: Evapotranspiration FAO564 short crop, mm  
 - et_tall_crop: ASCE5 tall crop6, mm  
@@ -82,54 +82,81 @@ Then uncomment the line '!pip install daesim-preprocess' and run each cell in se
 - accumulation  
 - topographic wetness index (TWI)  
 
-# Available parameters
-The different functions in this repo use mostly the same inputs with a few exceptions.
-- ozwald_8day: 
-- ozwald_daily:
-- silo_daily:
-- slga_soils:
-- terrain_tiles:
-- topography:
+# Available Parameters
+The functions in this repo use mostly the same inputs for consistency. All parameters have default values to make the functions easier to use and help with debugging. 
+
+| Function          | Parameters                                                                                          |
+|-------------------|-----------------------------------------------------------------------------------------------------|
+| **ozwald_8day**   | variables, lat, lon, buffer, start_year, end_year, outdir, stub, tmpdir, thredds, save_netcdf, plot |
+| **ozwald_daily**  | variables, lat, lon, buffer, start_year, end_year, outdir, stub, tmpdir, thredds, save_netcdf, plot |
+| **silo_daily**    | variables, lat, lon, buffer, start_year, end_year, outdir, stub, tmpdir, thredds, save_netcdf, plot |
+| **slga_soils**    | variables, lat, lon, buffer, outdir, stub, tmpdir, depths                                           |
+| **terrain_tiles** | lat, lon, buffer, outdir, stub, tmpdir, tile_level, interpolate                                     |
+| **topography**    | outdir, stub, ds, smooth, sigma, savetifs, plot                                                     |
+| **daesim_forcing**| outdir, stub                                                                                        |
+
 
 # Parameter Descriptions
 This is the meaning of each parameter.
-...
 
-# Return types
+| Parameter   | Default                 | Description   
+|-------------|-------------------------|-------------------------------------------------------------|
+| variables   | depends on the function | List of variables to download                               |
+| lat         | -34.389                 | Latitude from google maps (EPSG:4326)                       |
+| lon         | 148.469                 | Longitude from google maps (EPSG:4326)                      |
+| buffer      | 0.01 or 0.1             | Buffer in degrees in each direction (so 0.01 ~= 2km x 2km)  |
+| start_year  | 2020                    | Temporal data starts from Jan 1 of this year                |
+| end_year    | 2021                    | Temporal data ends on Dec 31 of this year                   |
+| outdir      | "." (current directory) | The directory for the final outputs                         |
+| stub        | "TEST"                  | The name that gets prepended to each file                   |
+| tmpdir      | "." (current directory) | The directory for temporary intermediate files              |
+| thredds     | True                    | Boolean to use the public facing Thredds API                |
+| save_netcdf | True                    | Boolean to save the final result to file                    |
+| plot        | True                    | Boolean to generate output png images                       |
+
+The extra parameters for slga_soils, terrain_tiles and topography are documented in the relevant python files.
+
+# Return Types
 Data is returned as an xarray DataSet and downloaded as NetCDF (.nc), tif, and/or png files. 
 
 # Usage
-pip install DAESIM_preprocess
-from DAESIM_preprocess import ozwald_daily  # (or another function)
-variables = [Tmax, Tmin]                    # (or other variables)
-lat, lon, buffer = -34.38, 148.46, 0.01     # (or another location)
-ds = ozwald_daily(variables, lat, lon, buffer)
+This is the basic pattern for using each function. More comprehensive examples are in the notebooks and tests.
+```
+pip install DAESIM_preprocess  
+
+from DAESIM_preprocess.ozwald_daily import ozwald_daily # (or another function)  
+variables = [Tmax, Tmin]                                # (or other variables)  
+lat, lon, buffer = -34.38, 148.46, 0.01                 # (or another location)  
+ds = ozwald_daily(variables, lat, lon, buffer)  
+```
 
 # Running Locally
 1. Download and install Miniconda from https://www.anaconda.com/download/success
 2. Add the miniconda filepath to your ~/.zhrc, e.g. export PATH="/opt/miniconda3/bin:$PATH" 
-3. brew install gdal
-4. git clone https://github.com/ChristopherBradley/DAESIM_preprocess.git
-5. cd DAESIM_preprocess
-6. conda env create -f environment.yml
-7. conda activate DAESIM_preprocess
-8. jupyter lab (to run the examples like on google colab)
+3. `brew install gdal`
+4. `git clone https://github.com/ChristopherBradley/DAESIM_preprocess.git`
+5. `cd DAESIM_preprocess`
+6. `conda env create -f environment.yml`
+7. `conda activate DAESIM_preprocess`
+8. `jupyter lab` (to run the example notebooks like on google colab)
 
-# Running via command line
-After completely steps 1-7 of running locally, you can run each of the scripts directly via the command line.
-python ozwald_8day ...
-python ozwald_daily ...
-python silo_daily ...
-python slga_soils ...
-python terrain_tiles ...
-python topography ...
+# Running via Command Line
+After completing steps 1-7 of running locally, you can run each of the scripts directly via the command line. For example: 
+```
+python ozwald_8day.py   --variable Ssoil    --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021  # etc.
+python ozwald_daily.py  --variable Tmin     --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021  # etc.
+python silo_daily.py    --variable min_temp --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021  # etc.
+python slga_soils.py    --variable Clay     --lat -34.389 --lon 148.469 --buffer 0.01  # etc.
+python terrain_tiles.py --lat -34.389 --lon 148.469 --buffer 0.01  # etc.
+python topography.py    --outdir '.'  --stub TEST  # etc.
+```
+The main differences when running from the command line are that you can only specify a single variable at a time, and the boolean default is False. This is documented in each python file, and you can also use `python ozwald_8day.py --help` to see info about the available parameters for each function from the command line.
 
 # Testing
-1. To run all the tests, just run 'pytest' from inside the repo
-2. To run a specific tests, use ...
-3. Sometimes the API's can be a bit temperamental, especially the SLGA, so may need to wait a while and try the test again.
+After completing steps 1-7 of running locally, you can check the setup is working correctly by running the tests. Currently the tests are run with `python tests/test_local.py`, but I'm about to change this to use pytest instead... Sometimes the API's can be a bit temperamental, especially the SLGA, so you may need to wait a while and try the test again.
 
-# Uploading to pypi
+# Uploading to PyPI
+Just a note for myself when I need to republish the library.
 1. python3 -m build
 2. twine upload dist/*
 3. Enter the API token
