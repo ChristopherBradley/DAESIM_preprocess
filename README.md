@@ -1,17 +1,89 @@
 # DAESIM_preprocess
 Harvesting environmental forcing data for running the Dynamic Agro-Ecosystem Simulator (DAESIM). 
 
-# Available variables
-Specifically, this repo downloads the following variables.
-- ozwald_8day: 
-- ozwald_daily:
-- silo_daily:
-- slga_soils:
-- terrain_tiles:
-- topography:
+# Jupyter Notebook Examples
+I've made some demo notebooks. These can all be run directly in Google Colab like this:  
+
+Click [Google Colab](https://colab.google/) > Open Colab > Sign In (just requires a google account) > GitHub >   
+search for 'ChristopherBradley' and select a notebook.
+- [ozwald_daily.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/ozwald_daily.ipynb)
+- [ozwald_8day.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/ozwald_8day.ipynb)
+- [silo_daily.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/silo_daily.ipynb)
+- [slga_soils.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/slga_soils.ipynb)
+- [terrain_tiles.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/terrain_tiles.ipynb)
+- [topography.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/topography.ipynb)
+- [daesim_forcing.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/daesim_forcing.ipynb)
+
+Then uncomment the line '!pip install daesim-preprocess' and run each cell in sequence (or click 'Run all').
+
+# Available Variables
+**ozwald_8day.py** can download these variables modelled at 500m spatial and 8 day temporal resolution, from the Australian Water and Landscape Dynamics ([OzWALD](https://geonetwork.nci.org.au/geonetwork/srv/eng/catalog.search#/metadata/f9589_2733_2545_4343)).
+- Alb: Albedo 
+- BS: Bare Surface  
+- EVI: Enhanced Vegetation Index  
+- FMC: Fuel Moisture Content  
+- GPP: Gross Primary Productivity  
+- LAI: Leaf Area Index  
+- NDVI: Normalised Difference Vegetation Index  
+- NPV: Non Photosynthetic Vegetation  
+- OW: Open Water  
+- PV: Photosynthetic Vegetation  
+- Qtot: Streamflow  
+- SN: Snow  
+- Ssoil: Soil profile moisture change  
+
+**ozwald_daily.py** can download these climate variables modelled at varying spatial resolutions (500m-5km depending on the variable) and daily temporal resolution, from Australian Water and Landscape Dynamics ([OzWALD](https://geonetwork.nci.org.au/geonetwork/srv/eng/catalog.search#/metadata/f9589_2733_2545_4343)). 
+- Pg : Gross precipitation     
+- Tmax : Maximum temperature       
+- Tmin : Minimum temperature      
+- Uavg : Average 24h windspeed     
+- Ueff : Effective daytime windspeed  
+- VPeff : Volume of effective rainfall 
+- kTavg : Coefficient to calculate mean screen level temperature  
+- kTeff : Coefficient to calculate effective screen level temperature
+
+**silo_daily.py** can download these climate variables modelled at 5km resolution daily, from Scientific Information for LandOwners ([SILO](https://www.longpaddock.qld.gov.au/silo/)).
+- daily_rain: Daily rainfall, mm  
+- monthly_rain: Monthly rainfall, mm  
+- max_temp: Maximum temperature, degrees Celsius  
+- min_temp: Minimum temperature, degrees Celsius  
+- vp: Vapour pressure, hPa  
+- vp_deficit: Vapour pressure deficit, hPa  
+- evap_pan: Class A pan evaporation, mm 
+- evap_syn: Synthetic estimate, mm
+- evap_morton_lake: Morton's shallow lake evaporation, mm  
+- radiation: Solar radiation: Solar exposure, consisting of both direct and diffuse components, MJ/m2  
+- rh_tmax: Relative humidity:	Relative humidity at the time of maximum temperature, %  
+- rh_tmin: Relative humidity at the time of minimum temperature, %  
+- et_short_crop: Evapotranspiration FAO564 short crop, mm  
+- et_tall_crop: ASCE5 tall crop6, mm  
+- et_morton_actual: Morton's areal actual evapotranspiration, mm  
+- et_morton_potential: Morton's point potential evapotranspiration, mm  
+- et_morton_wet: Morton's wet-environment areal potential evapotranspiration over land, mm  
+- mslp: Mean sea level pressure Mean sea level pressure, hPa  
+
+**slga_soils.py** can download these soil variables modelled at 90m resolution from the Soils and Landscape Grid of Australia ([SLGA](https://esoil.io/TERNLandscapes/Public/Pages/SLGA/index.html)).
+- Clay  
+- Silt  
+- Sand  
+- pH_CaCl2  
+- Bulk_Density  
+- Available_Water_Capacity  
+- Effective_Cation_Exchange_Capacity  
+- Total_Nitrogen  
+- Total_Phosphorus  
+
+**terrain_tiles.py** can download global elevation data from various sources at minimum 30m resolution, rescaled to 10m resolution by using tile level 14 ([Terrain Tiles](https://github.com/tilezen/joerd/blob/master/docs/data-sources.md)).
+- elevation  
+
+**topography.py** can download these derived topographic information mainly using ([pysheds](https://mattbartos.com/pysheds/)).
+- slope  
+- aspect  
+- accumulation  
+- topographic wetness index (TWI)  
 
 # Available parameters
-The parameters for each function are mostly the same with a few differences.
+The different functions in this repo use mostly the same inputs with a few exceptions.
 - ozwald_8day: 
 - ozwald_daily:
 - silo_daily:
@@ -21,20 +93,17 @@ The parameters for each function are mostly the same with a few differences.
 
 # Parameter Descriptions
 This is the meaning of each parameter.
+...
+
+# Return types
+Data is returned as an xarray DataSet and downloaded as NetCDF (.nc), tif, and/or png files. 
 
 # Usage
 pip install DAESIM_preprocess
-from DAESIM_preprocess import ozwald_daily  # (or whichever function)
-variables = [...]
-lat, lon, buffer = ...
-ozwald_daily(variables, lat, lon, buffer)
-
-# Jupyter Notebook Examples
-Here are some [example notebooks](https://github.com/ChristopherBradley/DAESIM_preprocess/tree/main/notebooks). 
-These notebooks can all be run directly in [Google Colab](https://colab.google/).
-1.
-2.
-3.
+from DAESIM_preprocess import ozwald_daily  # (or another function)
+variables = [Tmax, Tmin]                    # (or other variables)
+lat, lon, buffer = -34.38, 148.46, 0.01     # (or another location)
+ds = ozwald_daily(variables, lat, lon, buffer)
 
 # Running Locally
 1. Download and install Miniconda from https://www.anaconda.com/download/success
