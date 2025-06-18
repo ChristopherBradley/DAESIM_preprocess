@@ -18,10 +18,10 @@ topographic_variables = ['accumulation', 'aspect', 'slope', 'twi']
 dirmap = (64, 128, 1, 2, 4, 8, 16, 32)
 def pysheds_accumulation(terrain_tif):
     """Read in the grid and dem and calculate the water flow direction and accumulation"""
-    
+
     # Load both the dem (basically a numpy array), and the grid (all the metadata like the extent)
-    grid = Grid.from_raster(terrain_tif)
-    dem = grid.read_raster(terrain_tif)
+    grid = Grid.from_raster(terrain_tif, nodata=np.float64(np.nan))  # Crucial to specify these nodata parameters with the correct dtype or else everything breaks in the latest version of numpy
+    dem = grid.read_raster(terrain_tif, nodata=np.float64(np.nan))
 
     # Hydrologically enforce the DEM so water can flow downhill to the edge and not get stuck
     pit_filled_dem = grid.fill_pits(dem)
@@ -29,9 +29,9 @@ def pysheds_accumulation(terrain_tif):
     inflated_dem = grid.resolve_flats(flooded_dem)
 
     # Calculate the aspect (fdir) and accumulation of water (acc)
-    fdir = grid.flowdir(inflated_dem)
-    acc = grid.accumulation(fdir)
-
+    fdir = grid.flowdir(inflated_dem, nodata_out=np.int64(0))
+    acc = grid.accumulation(fdir, nodata_out=np.int64(0))
+        
     return grid, dem, fdir, acc
 
 
@@ -103,7 +103,7 @@ def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=
         print("Loading the pre-downloaded terrain tif")
         terrain_tif = os.path.join(outdir, f"{stub}_terrain.tif")
         if not os.path.exists(terrain_tif):
-            raise Exception("{terrain_tif} does not exist. Please run terrain_tiles.py first.")
+            raise Exception(f"{terrain_tif} does not exist. Please run terrain_tiles.py first.")
         da = rxr.open_rasterio(terrain_tif).isel(band=0).drop_vars('band')
         ds = da.to_dataset(name='terrain')
     
@@ -160,7 +160,6 @@ def parse_arguments():
 # -
 
 if __name__ == '__main__':
-    
     args = parse_arguments()
     
     outdir = args.outdir
