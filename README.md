@@ -5,7 +5,7 @@ Harvesting environmental forcing data for running the Dynamic Agro-Ecosystem Sim
 I've made some demo notebooks and these can all be run directly in Google Colab like this:  
 
 Click [Google Colab](https://colab.google/) > Open Colab > Sign In (just requires a google account) > GitHub >   
-search for 'ChristopherBradley' and select a notebook.
+search for 'ChristopherBradley' > 'ChristopherBradley/DAESIM_preprocess' > select a notebook
 - [ozwald_daily.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/ozwald_daily.ipynb)
 - [ozwald_8day.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/ozwald_8day.ipynb)
 - [silo_daily.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/silo_daily.ipynb)
