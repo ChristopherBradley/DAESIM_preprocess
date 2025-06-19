@@ -2,7 +2,7 @@
 Harvesting environmental forcing data for running the Dynamic Agro-Ecosystem Simulator (DAESIM). 
 
 # Jupyter Notebook Examples
-I've made some demo notebooks and these can all be run directly in Google Colab like this:  
+I've made some demo notebooks and these can be run directly in Google Colab like this:  
 
 Click [Google Colab](https://colab.google/) > Open Colab > Sign In (just requires a google account) > GitHub > search for 'ChristopherBradley' > 'ChristopherBradley/DAESIM_preprocess' > select a notebook. Then uncomment the line '!pip install daesim-preprocess' and run each cell in sequence (or click 'Run all').
 - [ozwald_daily.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/ozwald_daily.ipynb)
