@@ -153,7 +153,13 @@ python topography.py    --outdir '.'  --stub TEST  # etc.
 The main differences when running from the command line are that you can only specify a single variable at a time, and the boolean default is False. This is documented in each python file, and you can also use `python ozwald_8day.py --help` to see info about the available parameters for each function from the command line.
 
 # Testing
-After completing steps 1-7 of running locally, you can check the setup is working correctly by running the tests. Currently the tests are run with `python tests/test_local.py`, but I'm about to change this to use pytest instead... Sometimes the API's can be a bit temperamental, especially the SLGA, so you may need to wait a while and try the test again.
+After completing steps 1-7 of running locally, you can check the setup is working correctly by running the tests. 
+1. `python tests/tests_local.py`
+2. In Visual Studio Code, you can use the debugger to set breakpoints and step through the code while analysing variables.
+3. You can test the command line arguments with the bash script `./tests/tests_command_line.sh`
+4. The local tests should all run on NCI, along with some additional tests `python tests/tests_nci.py`
+
+Sometimes the API's can be a bit temperamental, especially the SLGA, so you may need to wait a while and try the test again.
 
 # Uploading to PyPI
 Just a note for myself when I need to republish the library.

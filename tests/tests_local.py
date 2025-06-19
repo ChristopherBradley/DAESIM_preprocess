@@ -5,6 +5,7 @@ print("Starting tests_local.py")
 import os
 
 from DAESIM_preprocess.terrain_tiles import terrain_tiles
+from DAESIM_preprocess.topography import topography
 from DAESIM_preprocess.slga_soils import slga_soils
 from DAESIM_preprocess.ozwald_8day import ozwald_8day
 from DAESIM_preprocess.ozwald_daily import ozwald_daily
@@ -37,6 +38,15 @@ assert set(ds.data_vars) == {'terrain'}
 assert os.path.exists("tmpdir/TEST_terrain_original.tif")
 assert os.path.exists("outdir/TEST_terrain.tif")
 
+ds = topography(outdir="outdir", stub="TEST")
+assert set(ds.coords) == {'x', 'y'} 
+assert set(ds.data_vars) == {'terrain', 'dem_smooth', 'accumulation', 'aspect', 'slope', 'twi'}
+assert os.path.exists("outdir/TEST_accumulation.tif")
+assert os.path.exists("outdir/TEST_aspect.tif")
+assert os.path.exists("outdir/TEST_slope.tif")
+assert os.path.exists("outdir/TEST_twi.tif")
+assert os.path.exists("outdir/TEST_topography.png")
+
 slga_soils(variables=["Clay"], lat=-34.3890427, lon=148.469499, buffer=0.005, outdir="tmpdir", stub="TEST",  depths=["5-15cm"])
 assert os.path.exists("tmpdir/TEST_Clay_5-15cm.tif")
 
@@ -47,7 +57,7 @@ assert os.path.exists("outdir/TEST_silo_daily.nc")
 assert os.path.exists("outdir/TEST_silo_daily.png")
 
 
-# More comprehensive tests for OzWald: All variables, 3x buffers, all years, with or without netcdf & plotting
+# More comprehensive tests for ozwald_daily: All variables, 3x buffers, all years, with or without netcdf & plotting
 ds = ozwald_daily(variables=["Tmax", "Tmin"], lat=-34.3890427, lon=148.469499, buffer=0.01, start_year="2020", end_year="2021", outdir="outdir", stub="TEST", tmpdir="tmpdir", thredds=True, save_netcdf=True, plot=True)
 assert set(ds.coords) == {'time', 'latitude', 'longitude'}  
 assert set(ds.data_vars) == {"Tmax", "Tmin"}
@@ -84,7 +94,7 @@ assert not os.path.exists("TEST_ozwald_daily_Ueff.png")
 # Should also test (and handle) larger buffer sizes, and locations outside Australia
 
 
-# More comprehensive tests for ozwald_8day: All variables, 2x buffers, all years, with or without netcdf & plotting
+# More comprehensive tests for ozwald_8day: All variables, 2x buffers, multiple years, with or without netcdf & plotting
 ds = ozwald_8day(variables=["Ssoil"], lat=-34.3890427, lon=148.469499, buffer=0.01, start_year="2020", end_year="2021", outdir="outdir", stub="TEST", tmpdir="tmpdir", thredds=True, save_netcdf=True, plot=True)
 assert set(ds.coords) == {'time', 'latitude', 'longitude'}  
 
@@ -128,11 +138,49 @@ assert set(ds.data_vars) == {'terrain'}
 
 if os.path.exists("outdir/TEST_terrain.tif"):
     os.remove("outdir/TEST_terrain.tif")
-if os.path.exists("tmpdir/TEST_terrain_original.tif"):
-    os.remove("tmpdir/TEST_terrain_original.tif")
-terrain_tiles(lat=-34.3890427, lon=148.469499, buffer=0.005, outdir="outdir", stub="TEST", tmpdir="tmpdir", tile_level=14, interpolate=False)
+ds = terrain_tiles(lat=-34.3890427, lon=148.469499, buffer=0.005, outdir="outdir", stub="TEST", tmpdir="tmpdir", tile_level=14, interpolate=False)
 assert not os.path.exists("outdir/TEST_terrain.tif")
-assert os.path.exists("tmpdir/TEST_terrain_original.tif")
+
+ds = terrain_tiles(lat=-34.3890427, lon=148.469499, buffer=0.005, outdir="outdir", stub="TEST", tmpdir="tmpdir", tile_level=14, interpolate=True)
+assert set(ds.coords) == {'x', 'y'}  
+assert set(ds.data_vars) == {'terrain'}
+
+
+# More comprehensive tests for topography: different sigma, with or without smoothing, savetifs, verbose, and plot
+ds = topography(outdir="outdir", stub="TEST", smooth=False, sigma=10, ds=None, savetifs=True, verbose=True, plot=True)
+assert set(ds.coords) == {'x', 'y'} 
+assert set(ds.data_vars) == {'terrain', 'accumulation', 'aspect', 'slope', 'twi'}
+
+ds = topography(outdir="outdir", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=True, verbose=True, plot=True)
+assert set(ds.coords) == {'x', 'y'} 
+assert set(ds.data_vars) == {'terrain', 'dem_smooth', 'accumulation', 'aspect', 'slope', 'twi'}
+
+if os.path.exists("outdir/TEST_accumulation.tif"):
+    os.remove("outdir/TEST_accumulation.tif")
+if os.path.exists("outdir/TEST_aspect.tif"):
+    os.remove("outdir/TEST_aspect.tif")
+if os.path.exists("outdir/TEST_slope.tif"):
+    os.remove("outdir/TEST_slope.tif")
+if os.path.exists("outdir/TEST_twi.tif"):
+    os.remove("outdir/TEST_twi.tif")
+ds = topography(outdir="outdir", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=False, verbose=True, plot=True)
+assert set(ds.coords) == {'x', 'y'} 
+assert set(ds.data_vars) == {'terrain', 'dem_smooth', 'accumulation', 'aspect', 'slope', 'twi'}
+assert not os.path.exists("outdir/TEST_accumulation.tif")
+assert not os.path.exists("outdir/TEST_aspect.tif")
+assert not os.path.exists("outdir/TEST_slope.tif")
+assert not os.path.exists("outdir/TEST_twi.tif")
+
+ds = topography(outdir="outdir", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=True, verbose=False, plot=True)
+assert set(ds.coords) == {'x', 'y'} 
+assert set(ds.data_vars) == {'terrain', 'dem_smooth', 'accumulation', 'aspect', 'slope', 'twi'}
+
+if os.path.exists("outdir/TEST_topography.png"):
+    os.remove("outdir/TEST_topography.png")
+ds = topography(outdir="outdir", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=True, verbose=True, plot=False)
+assert set(ds.coords) == {'x', 'y'} 
+assert set(ds.data_vars) == {'terrain', 'dem_smooth', 'accumulation', 'aspect', 'slope', 'twi'}
+assert not os.path.exists("outdir/TEST_topography.png")
 
 
 # More comprehensive tests for slga soils: 2x buffers, all variables, all depths 

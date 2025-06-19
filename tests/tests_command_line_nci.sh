@@ -1,1 +1,0 @@
-# A shell script testing all of the functionality from the command line

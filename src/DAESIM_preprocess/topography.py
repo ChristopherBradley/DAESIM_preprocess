@@ -61,7 +61,7 @@ def calculate_TWI(acc, slope):
         TWI = ln( accumulation / tan(slope) )
     """
     ratio_acc_slope = acc / np.tan(np.radians(slope))
-    ratio_acc_slope[ratio_acc_slope <= 0] = 1     # Avoid division by 0
+    ratio_acc_slope[ratio_acc_slope <= 0] = 1     # Tried to avoid the division by 0 runtime warning, but don't think it worked
     twi = np.log(ratio_acc_slope)
     return twi
 
@@ -155,6 +155,7 @@ def plot_topography(ds, outdir='.', stub='Test'):
     plt.tight_layout()
     filepath = os.path.join(outdir, stub + "_topography.png")
     plt.savefig(filepath, dpi=300)
+    plt.close()
     print(f"Saved: {filepath}")
 
 def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=True, verbose=True, plot=True):
@@ -226,6 +227,8 @@ def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=
 
     if plot:
         plot_topography(ds, outdir, stub)
+
+    ds = ds.drop_vars('spatial_ref')
 
     return ds
 
