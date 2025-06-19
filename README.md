@@ -169,5 +169,13 @@ Just a note for myself when I need to republish the library.
 4. Check it out at https://pypi.org/project/DAESIM-preprocess
 
 # References
-Each data source is referenced in the source code, jupyter notebooks, and there is a complete list here:
-...
+- Australia terrain data © Commonwealth of Australia (Geoscience Australia) 2017;
+- Haan S, Harianto J, Butterworth N, Bishop T (2023) Geodata-Harvester: A Python package to jumpstart geospatial data extraction and analysis, Journal of Open Source Software, 8(89):5205, https://doi.org/10.21105/joss.05205
+- Jeffrey SJ, Carter JO, Moodie KB, Beswick AR (2001) Using spatial interpolation to construct a comprehensive archive of Australian climate data, Environmental Modelling & Software, 16(4):309-30, https://doi.org/10.1016/S1364-8152(01)00008-1
+- Rossel RV, Chen C, Grundy MJ, Searle R, Clifford D, Campbell PH (2015) The Australian three-dimensional soil grid: Australia’s contribution to the GlobalSoilMap project, Soil Research, 53(8):845-64, https://doi.org/10.1071/SR14366
+- Mapzen (2017) Terrain Tiles on AWS, Amazon, accessed 28 October 2024, https://registry.opendata.aws/terrain-tiles
+- United States 3DEP (formerly NED) and global GMTED2010 and SRTM terrain data
+courtesy of the U.S. Geological Survey.
+- Van Dijk, AIJM (2010) The Australian Water Resources Assessment System. Technical
+Report 3. Landscape Model (version 0.5) Technical Description, CSIRO: Water for a Healthy Country National Research Flagship, https://awo.bom.gov.au/assets/notes/publications/Van_Dijk_AWRA05_TechReport3.pdf
+- Van Dijk AIJM, Rahman J (2019) Synthesising multiple observations into annual environmental condition reports: the OzWALD system and Australia’s Environment Explorer. In Elsawah, S. (ed.) MODSIM2019, 23rd International Congress on Modelling and Simulation. Modelling and Simulation Society of Australia and New Zealand, pp. 884–890. ISBN: 978-0-9758400-9-2, https://doi.org/10.36334/modsim.2019.J5.vandijk
