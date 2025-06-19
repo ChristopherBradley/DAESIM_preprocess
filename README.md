@@ -143,12 +143,13 @@ ds = ozwald_daily(variables, lat, lon, buffer)
 # Running via Command Line
 After completing steps 1-7 of running locally, you can run each of the scripts directly via the command line. For example: 
 ```
-python ozwald_8day.py   --variable Ssoil    --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021  # etc.
-python ozwald_daily.py  --variable Tmin     --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021  # etc.
-python silo_daily.py    --variable min_temp --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021  # etc.
-python slga_soils.py    --variable Clay     --lat -34.389 --lon 148.469 --buffer 0.01  # etc.
-python terrain_tiles.py --lat -34.389 --lon 148.469 --buffer 0.01  # etc.
-python topography.py    --outdir '.'  --stub TEST  # etc.
+cd src/DAESIM_preprocess
+python ozwald_8day.py   --variable Ssoil    --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
+python ozwald_daily.py  --variable Tmin     --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
+python silo_daily.py    --variable min_temp --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
+python slga_soils.py    --variable Clay     --lat -34.389 --lon 148.469 --buffer 0.01
+python terrain_tiles.py --lat -34.389 --lon 148.469 --buffer 0.01
+python topography.py    --outdir '.'  --stub TEST
 ```
 The main differences when running from the command line are that you can only specify a single variable at a time, and the boolean default is False. This is documented in each python file, and you can also use `python ozwald_8day.py --help` to see info about the available parameters for each function from the command line.
 
