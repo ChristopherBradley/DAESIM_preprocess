@@ -4,17 +4,16 @@ Harvesting environmental forcing data for running the Dynamic Agro-Ecosystem Sim
 # Jupyter Notebook Examples
 I've made some demo notebooks and these can all be run directly in Google Colab like this:  
 
-Click [Google Colab](https://colab.google/) > Open Colab > Sign In (just requires a google account) > GitHub >   
-search for 'ChristopherBradley' > 'ChristopherBradley/DAESIM_preprocess' > select a notebook
+Click [Google Colab](https://colab.google/) > Open Colab > Sign In (just requires a google account) > GitHub > search for 'ChristopherBradley' > 'ChristopherBradley/DAESIM_preprocess' > select a notebook. Then uncomment the line '!pip install daesim-preprocess' and run each cell in sequence (or click 'Run all').
 - [ozwald_daily.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/ozwald_daily.ipynb)
 - [ozwald_8day.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/ozwald_8day.ipynb)
 - [silo_daily.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/silo_daily.ipynb)
 - [slga_soils.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/slga_soils.ipynb)
-- [terrain_tiles.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/terrain_tiles.ipynb)
-- [topography.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/topography.ipynb)
 - [daesim_forcing.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/daesim_forcing.ipynb)
 
-Then uncomment the line '!pip install daesim-preprocess' and run each cell in sequence (or click 'Run all').
+Note the terrain_tiles and topography notebooks don't work on Google Colab because of the gdalwarp dependency, so you need to run these locally.
+- [terrain_tiles.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/terrain_tiles.ipynb)
+- [topography.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/topography.ipynb)
 
 # Available Variables
 **ozwald_8day.py** can download these variables modelled at 500m spatial and 8 day temporal resolution, from the Australian Water and Landscape Dynamics ([OzWALD](https://geonetwork.nci.org.au/geonetwork/srv/eng/catalog.search#/metadata/f9589_2733_2545_4343)).
