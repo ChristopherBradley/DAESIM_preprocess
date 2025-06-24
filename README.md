@@ -141,7 +141,7 @@ ds = ozwald_daily(variables, lat, lon, buffer)
 9. `jupyter lab` (to run the example notebooks like on google colab)
 
 # Running via Command Line
-After completing steps 1-7 of running locally, you can run each of the scripts directly via the command line. For example: 
+After completing steps 1-8 of running locally, you can run each of the scripts directly via the command line. For example: 
 ```
 ozwald_8day.py   --variable Ssoil    --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
 ozwald_daily.py  --variable Tmin     --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
@@ -153,7 +153,7 @@ topography.py    --outdir '.'  --stub TEST
 The main differences when running from the command line are that you can only specify a single variable at a time, and the boolean default is False. This is documented in each python file, and you can also use `ozwald_8day.py --help` to see info about the available parameters for each function from the command line.
 
 # Testing
-After completing steps 1-7 of running locally, you can check the setup is working correctly by running the tests. 
+After completing steps 1-8 of running locally, you can check the setup is working correctly by running the tests. 
 1. `python tests/tests_local.py`
 2. In Visual Studio Code, you can use the debugger to set breakpoints and step through the code while analysing variables.
 3. You can test the command line arguments with the bash script `./tests/tests_command_line.sh`
