@@ -11,7 +11,7 @@ Right click [Google Colab](https://colab.google/) > Open Link in New Tab > Open 
 - [slga_soils.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/slga_soils.ipynb)
 - [daesim_forcing.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/daesim_forcing.ipynb)
 
-Note the terrain_tiles and topography notebooks don't work on Google Colab because of the gdalwarp dependency, so you need to run these locally.
+Note the terrain_tiles and topography notebooks don't work on Google Colab because of the gdalwarp dependency, so you need to run these locally (see [Running Locally](#running-locally) below).
 - [terrain_tiles.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/terrain_tiles.ipynb)
 - [topography.ipynb](https://github.com/ChristopherBradley/DAESIM_preprocess/blob/main/notebooks/topography.ipynb)
 
