@@ -1,6 +1,4 @@
 .DS_Store
-tmpdir
-outdir
 terrain_tiles.xml
 dist_old_versions
 *.nc
