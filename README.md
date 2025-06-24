@@ -137,20 +137,20 @@ ds = ozwald_daily(variables, lat, lon, buffer)
 5. `cd DAESIM_preprocess`
 6. `conda env create -f environment.yml`
 7. `conda activate DAESIM_preprocess`
-8. `jupyter lab` (to run the example notebooks like on google colab)
+8. `export PATH=$PATH:$(pwd)/src/DAESIM_preprocess`
+9. `jupyter lab` (to run the example notebooks like on google colab)
 
 # Running via Command Line
 After completing steps 1-7 of running locally, you can run each of the scripts directly via the command line. For example: 
 ```
-cd src/DAESIM_preprocess
-python ozwald_8day.py   --variable Ssoil    --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
-python ozwald_daily.py  --variable Tmin     --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
-python silo_daily.py    --variable min_temp --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
-python slga_soils.py    --variable Clay     --lat -34.389 --lon 148.469 --buffer 0.01
-python terrain_tiles.py --lat -34.389 --lon 148.469 --buffer 0.01
-python topography.py    --outdir '.'  --stub TEST
+ozwald_8day.py   --variable Ssoil    --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
+ozwald_daily.py  --variable Tmin     --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
+silo_daily.py    --variable min_temp --lat -34.389 --lon 148.469 --buffer 0.01 --start_year 2020 --end_year 2021
+slga_soils.py    --variable Clay     --lat -34.389 --lon 148.469 --buffer 0.01
+terrain_tiles.py --lat -34.389 --lon 148.469 --buffer 0.01
+topography.py    --outdir '.'  --stub TEST
 ```
-The main differences when running from the command line are that you can only specify a single variable at a time, and the boolean default is False. This is documented in each python file, and you can also use `python ozwald_8day.py --help` to see info about the available parameters for each function from the command line.
+The main differences when running from the command line are that you can only specify a single variable at a time, and the boolean default is False. This is documented in each python file, and you can also use `ozwald_8day.py --help` to see info about the available parameters for each function from the command line.
 
 # Testing
 After completing steps 1-7 of running locally, you can check the setup is working correctly by running the tests. 

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# The shebang above allows the script to be added to the python path
+
 # Terrain Tiles documentation is here: https://github.com/tilezen/joerd/blob/master/docs/data-sources.md
 
 # +

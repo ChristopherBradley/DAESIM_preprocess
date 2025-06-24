@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# The shebang above allows the script to be added to the python path
+
 # +
 # Documentation for the SILO variables is here: https://www.longpaddock.qld.gov.au/silo/gridded-data
 

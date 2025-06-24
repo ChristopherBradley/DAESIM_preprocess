@@ -1,4 +1,6 @@
-# +
+#!/usr/bin/env python
+# The shebang above allows the script to be added to the python path
+
 # Catalog of OzWald daily variables is here: https://thredds.nci.org.au/thredds/catalog/ub8/au/OzWALD/daily/meteo/catalog.html
 
 # +

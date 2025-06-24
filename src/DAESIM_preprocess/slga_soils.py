@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# The shebang above allows the script to be added to the python path
+
+
 # +
 # Catalog is here: https://www.asris.csiro.au/arcgis/rest/services/TERN
 

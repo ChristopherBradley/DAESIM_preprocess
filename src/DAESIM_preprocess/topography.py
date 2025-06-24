@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# The shebang above allows the script to be added to the python path
+
 # +
 #  Pysheds documentation is here: https://mattbartos.com/pysheds/
 import os

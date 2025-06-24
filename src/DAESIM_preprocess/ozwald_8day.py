@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# The shebang above allows the script to be added to the python path
+
 # +
 # Catalog is here: https://thredds.nci.org.au/thredds/catalog/ub8/au/OzWALD/8day/catalog.html
 
