@@ -25,7 +25,7 @@ ozwald_daily_abbreviations = {
 }
 
 
-def ozwald_daily_singleyear_thredds(var="VPeff", latitude=-34.3890427, longitude=148.469499, buffer=0.1, year="2021", stub="TEST", tmp_dir="scratch_dir"):
+def ozwald_daily_singleyear_thredds(var="VPeff", latitude=-34.3890427, longitude=148.469499, buffer=0.1, year="2021", stub="TEST", tmp_dir="scratch_dir", verbose=True):
     
     north = latitude + buffer 
     south = latitude - buffer 
@@ -46,7 +46,8 @@ def ozwald_daily_singleyear_thredds(var="VPeff", latitude=-34.3890427, longitude
         filename = os.path.join(tmp_dir, f"{stub}_{var}_{year}.nc")
         with open(filename, 'wb') as f:
             f.write(response.content)
-        print("Downloaded", filename)
+        if verbose:
+            print("Downloaded", filename)
         ds = xr.open_dataset(filename)
     else:
         return None
@@ -64,7 +65,6 @@ def ozwald_daily_singleyear_gdata(var="VPeff", latitude=-34.3890427, longitude=1
         return None
         
     ds = xr.open_dataset(filename)
-    # print("Loaded", filename)
     
     bbox = [longitude - buffer, latitude - buffer, longitude + buffer, latitude + buffer]
     ds_region = ds.sel(latitude=slice(bbox[3], bbox[1]), longitude=slice(bbox[0], bbox[2]))
@@ -76,11 +76,11 @@ def ozwald_daily_singleyear_gdata(var="VPeff", latitude=-34.3890427, longitude=1
     return ds_region
 
 
-def ozwald_daily_multiyear(var="VPeff", latitude=-34.3890427, longitude=148.469499, buffer=0.1, years=["2020", "2021"], stub="TEST", tmpdir=".", thredds=True):
+def ozwald_daily_multiyear(var="VPeff", latitude=-34.3890427, longitude=148.469499, buffer=0.1, years=["2020", "2021"], stub="TEST", tmpdir=".", thredds=True, verbose=True):
     dss = []
     for year in years:
         if thredds:
-            ds_year = ozwald_daily_singleyear_thredds(var, latitude, longitude, buffer, year, stub, tmpdir)
+            ds_year = ozwald_daily_singleyear_thredds(var, latitude, longitude, buffer, year, stub, tmpdir, verbose=verbose)
         else:
             ds_year = ozwald_daily_singleyear_gdata(var, latitude, longitude, buffer, year)
         if ds_year:
@@ -89,7 +89,7 @@ def ozwald_daily_multiyear(var="VPeff", latitude=-34.3890427, longitude=148.4694
     return ds_concat
 
 
-def ozwald_daily(variables=["VPeff", "Uavg"], lat=-34.3890427, lon=148.469499, buffer=0.1, start_year="2020", end_year="2021", outdir=".", stub="TEST", tmpdir=".", thredds=True, save_netcdf=True, plot=True):
+def ozwald_daily(variables=["VPeff", "Uavg"], lat=-34.3890427, lon=148.469499, buffer=0.1, start_year="2020", end_year="2021", outdir=".", stub="TEST", tmpdir=".", thredds=True, save_netcdf=True, plot=True, verbose=True):
     """Download daily variables from OzWald at varying resolutions for the region/time of interest
 
     Parameters
@@ -108,19 +108,21 @@ def ozwald_daily(variables=["VPeff", "Uavg"], lat=-34.3890427, lon=148.469499, b
         ds_concat: an xarray containing the requested variables in the region of interest for the time period specified
         A NetCDF file of this xarray gets downloaded to outdir/(stub)_ozwald_daily_(first_variable).nc'
     """
-    print(f"Starting ozwald_daily")
+    if verbose:
+        print(f"Starting ozwald_daily")
 
     dss = []
     years = [str(year) for year in list(range(int(start_year), int(end_year) + 1))]
     for variable in variables:
-        ds_variable = ozwald_daily_multiyear(variable, lat, lon, buffer, years, stub, tmpdir, thredds)
+        ds_variable = ozwald_daily_multiyear(variable, lat, lon, buffer, years, stub, tmpdir, thredds, verbose=verbose)
         dss.append(ds_variable)
     ds_concat = xr.merge(dss)
 
     if save_netcdf:
         filename = os.path.join(outdir, f'{stub}_ozwald_daily_{variables[0]}.nc')
         ds_concat.to_netcdf(filename)
-        print("Saved:", filename)
+        if verbose:
+            print("Saved:", filename)
             
     if plot:
         import matplotlib.pyplot as plt
@@ -136,7 +138,8 @@ def ozwald_daily(variables=["VPeff", "Uavg"], lat=-34.3890427, lon=148.469499, b
         filename = os.path.join(outdir, f'{stub}_ozwald_daily_{variables[0]}.png')
         plt.savefig(filename, dpi=300, bbox_inches='tight')
         plt.close()
-        print("Saved:", filename)
+        if verbose:
+            print("Saved:", filename)
 
     return ds_concat
 

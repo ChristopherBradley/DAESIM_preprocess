@@ -84,7 +84,7 @@ def add_numpy_band(ds, variable, array, affine, resampling_method):
     ds[variable] = reprojected
     return ds
 
-def plot_topography(ds, outdir='.', stub='Test'):
+def plot_topography(ds, outdir='.', stub='Test', verbose=True):
     """Create 4 side by side plots of elevation, accumulation, aspect, slope"""
     # Reproject to World Geodetic System
     ds = ds.rio.reproject("EPSG:4326")
@@ -159,7 +159,8 @@ def plot_topography(ds, outdir='.', stub='Test'):
     filepath = os.path.join(outdir, stub + "_topography.png")
     plt.savefig(filepath, dpi=300)
     plt.close()
-    print(f"Saved: {filepath}")
+    if verbose:
+        print(f"Saved: {filepath}")
 
 def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=True, verbose=True, plot=True):
     """Derive topographic variables from the elevation. 
@@ -182,10 +183,12 @@ def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=
         ds: An xarray containing the aspect, slope, accumulation and TWI.
 
     """
-    print(f"Starting topography.py")
+    if verbose:
+        print(f"Starting topography.py")
 
     if not ds:
-        print("Loading the pre-downloaded terrain tif")
+        if verbose:
+            print("Loading the pre-downloaded terrain tif")
         terrain_tif = os.path.join(outdir, f"{stub}_terrain.tif")
         if not os.path.exists(terrain_tif):
             raise Exception(f"{terrain_tif} does not exist. Please run terrain_tiles.py first.")
@@ -229,7 +232,7 @@ def topography(outdir=".", stub="TEST", smooth=True, sigma=5, ds=None, savetifs=
                 print("Saved:", filepath)
 
     if plot:
-        plot_topography(ds, outdir, stub)
+        plot_topography(ds, outdir, stub, verbose=verbose)
 
     ds = ds.drop_vars('spatial_ref')
 

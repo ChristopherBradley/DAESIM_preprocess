@@ -60,7 +60,7 @@ def generate_xml(tile_level=14, filename="terrain_tiles.xml"):
         f.write(xml_string)
 
 
-def run_gdalwarp(bbox=[148.464499, -34.394042, 148.474499, -34.3840426], filename="output.tif", tile_level=14, debug=False):
+def run_gdalwarp(bbox=[148.464499, -34.394042, 148.474499, -34.3840426], filename="output.tif", tile_level=14, debug=False, verbose=True):
     """Use gdalwarp to download a tif from terrain tiles"""
 
     if os.path.exists(filename):
@@ -81,7 +81,8 @@ def run_gdalwarp(bbox=[148.464499, -34.394042, 148.474499, -34.3840426], filenam
     if debug:
         print("Terrain Tiles STDOUT:", result.stdout, flush=True)  # Debugging if something isn't working
         print("Terrain Tiles STDERR:", result.stderr, flush=True)
-    print(f"Downloaded {filename}")
+    if verbose:
+        print(f"Downloaded {filename}")
 
 def interpolate_nan(filename="output.tif"):
     """Fix bad measurements in terrain tiles dem"""
@@ -123,7 +124,7 @@ def interpolate_nan(filename="output.tif"):
 
     return nearest, meta
 
-def download_dem(dem, meta, filename="terrain_tiles.tif"):
+def download_dem(dem, meta, filename="terrain_tiles.tif", verbose=True):
     meta.update({
         "driver": "GTiff",
         "height": dem.shape[0],
@@ -133,7 +134,8 @@ def download_dem(dem, meta, filename="terrain_tiles.tif"):
     })
     with rasterio.open(filename, 'w', **meta) as dst:
         dst.write(dem, 1)
-    print(f"Saved {filename}")
+    if verbose:
+        print(f"Saved {filename}")
 
 def create_xarray(dem, meta):
     """Convert the cleaned dem into an xarray, without re-writing and re-reading to file"""
@@ -159,7 +161,7 @@ def create_xarray(dem, meta):
     dem_ds = dem_da.to_dataset()
     return dem_ds
     
-def terrain_tiles(lat=-34.3890427, lon=148.469499, buffer=0.005, outdir=".", stub="TEST", tmpdir=".", tile_level=14, interpolate=True):
+def terrain_tiles(lat=-34.3890427, lon=148.469499, buffer=0.005, outdir=".", stub="TEST", tmpdir=".", tile_level=14, interpolate=True, verbose=True):
     """Download 10m resolution elevation from terrain_tiles
     
     Parameters
@@ -177,20 +179,21 @@ def terrain_tiles(lat=-34.3890427, lon=148.469499, buffer=0.005, outdir=".", stu
         A Tiff file of elevation with severe outlier pixels replaced by the nearest neighbour
 
     """
-    print(f"Starting terrain_tiles.py")
+    if verbose:
+        print(f"Starting terrain_tiles.py")
     buffer = max(0.00002, buffer) # Make sure we download at least 1 pixel
     # Perhaps we should also force a maximum buffer, but then this would have to be dependent on the tile_level.
     
     # Download the raw data from terrain tiles
     bbox = [lon - buffer, lat - buffer, lon + buffer, lat + buffer]
     filename = os.path.join(tmpdir, f"{stub}_terrain_original.tif")
-    run_gdalwarp(bbox, filename, tile_level)
+    run_gdalwarp(bbox, filename, tile_level, verbose=verbose)
 
     if interpolate:
         # Fix bad measurements
         dem, meta = interpolate_nan(filename)        
         filename = os.path.join(outdir, f"{stub}_terrain.tif")
-        download_dem(dem, meta, filename)
+        download_dem(dem, meta, filename, verbose=verbose)
         ds = create_xarray(dem, meta)
     else:
         # We could use rxr.open_rasterio() but the purpose of the interpolate flag is to reduce computational overhead, so I think it's better not to reload the tif here.  

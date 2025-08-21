@@ -38,7 +38,7 @@ silo_abbreviations = {
     }
 
 
-def download_from_SILO(var="radiation", year="2020", silo_folder="."):
+def download_from_SILO(var="radiation", year="2020", silo_folder=".", verbose=True):
     """Download a NetCDF for the whole of Australia, for a given year and variable"""
     # I haven't found a way to download only the region of interest from SILO, hence we are downloading all of Australia
     silo_baseurl = "https://s3-ap-southeast-2.amazonaws.com/silo-open-data/Official/annual/"
@@ -48,19 +48,21 @@ def download_from_SILO(var="radiation", year="2020", silo_folder="."):
     # Check the file exists before attempting to download it
     response = requests.head(url)
     if response.status_code == 200:
-        print(f"Downloading from SILO: {var} {year} ~400MB")
+        if verbose:
+            print(f"Downloading from SILO: {var} {year} ~400MB")
         with requests.get(url, stream=True) as stream:
             with open(filename, "wb") as file:
                 shutil.copyfileobj(stream.raw, file)
-        print(f"Downloaded {filename}")
+        if verbose:
+            print(f"Downloaded {filename}")
 
 
-def silo_daily_singleyear(var="radiation", latitude=-34.3890427, longitude=148.469499, buffer=0.1, year="2020", silo_folder="."):
+def silo_daily_singleyear(var="radiation", latitude=-34.3890427, longitude=148.469499, buffer=0.1, year="2020", silo_folder=".", verbose=True):
     """Select the region of interest from the Australia wide NetCDF file"""
     filename = os.path.join(silo_folder, f"{year}.{var}.nc")
     
     if not os.path.exists(filename):
-        download_from_SILO(var, year, silo_folder)
+        download_from_SILO(var, year, silo_folder, verbose=verbose)
 
     try:
         ds = xr.open_dataset(filename)
@@ -82,17 +84,17 @@ def silo_daily_singleyear(var="radiation", latitude=-34.3890427, longitude=148.4
     return ds_region
 
 
-def silo_daily_multiyear(var="radiation", latitude=-34.3890427, longitude=148.469499, buffer=0.1, years=["2020", "2021"], silo_folder="."):
+def silo_daily_multiyear(var="radiation", latitude=-34.3890427, longitude=148.469499, buffer=0.1, years=["2020", "2021"], silo_folder=".", verbose=True):
     dss = []
     for year in years:
-        ds = silo_daily_singleyear(var, latitude, longitude, buffer, year, silo_folder)
+        ds = silo_daily_singleyear(var, latitude, longitude, buffer, year, silo_folder, verbose=verbose)
         if ds:
             dss.append(ds)
     ds_concat = xr.concat(dss, dim='time')
     return ds_concat
 
 
-def silo_daily(variables=["radiation"], lat=-34.3890427, lon=148.469499, buffer=0.1, start_year="2020", end_year="2020", outdir=".", stub="TEST", tmpdir=".", thredds=None, save_netcdf=True, plot=True):
+def silo_daily(variables=["radiation"], lat=-34.3890427, lon=148.469499, buffer=0.1, start_year="2020", end_year="2020", outdir=".", stub="TEST", tmpdir=".", thredds=None, save_netcdf=True, plot=True, verbose=True):
     """Download daily variables from SILO at 5km resolution for the region/time of interest
 
     Parameters
@@ -111,19 +113,21 @@ def silo_daily(variables=["radiation"], lat=-34.3890427, lon=148.469499, buffer=
     -------
         ds_concat: an xarray containing the requested variables in the region of interest for the time period specified
     """
-    print(f"Starting silo_daily for stub {stub}")
+    if verbose:
+        print(f"Starting silo_daily for stub {stub}")
     
     dss = []
     years = [str(year) for year in list(range(int(start_year), int(end_year) + 1))]
     for variable in variables:
-        ds = silo_daily_multiyear(variable, lat, lon, buffer, years, tmpdir)
+        ds = silo_daily_multiyear(variable, lat, lon, buffer, years, tmpdir, verbose=verbose)
         dss.append(ds)
     ds_concat = xr.merge(dss)
     
     if save_netcdf:
         filename = os.path.join(outdir, f'{stub}_silo_daily.nc')
         ds_concat.to_netcdf(filename)
-        print("Saved:", filename)
+        if verbose:
+            print("Saved:", filename)
 
     if plot:
         # Copy pasting this between ozwald_daily, ozwald_8day and silo_daily. Not sure if it's worth creating an import, because small changes between the 3 API's keep cropping up.
@@ -140,7 +144,8 @@ def silo_daily(variables=["radiation"], lat=-34.3890427, lon=148.469499, buffer=
         filename = os.path.join(outdir, f'{stub}_silo_daily.png')
         plt.savefig(filename, dpi=300, bbox_inches='tight')
         plt.close()
-        print("Saved:", filename)
+        if verbose:
+            print("Saved:", filename)
 
     return ds_concat
 

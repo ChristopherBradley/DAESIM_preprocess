@@ -34,7 +34,7 @@ ozwald_8day_abbreviations = {
 
 # This function uses the public facing Thredds API, so does not need to be run on NCI
 # However it doesn't work in a PBS script from my tests
-def ozwald_8day_singleyear_thredds(var="Ssoil", latitude=-34.3890427, longitude=148.469499, buffer=0.01, year="2021", stub="TEST", tmpdir='.'):
+def ozwald_8day_singleyear_thredds(var="Ssoil", latitude=-34.3890427, longitude=148.469499, buffer=0.01, year="2021", stub="TEST", tmpdir='.', verbose=True):
 
     buffer = max(0.003, buffer)  # If you specify an area that's too small then no data gets returned from thredds
     
@@ -57,7 +57,8 @@ def ozwald_8day_singleyear_thredds(var="Ssoil", latitude=-34.3890427, longitude=
             filename = os.path.join(tmpdir, f"{stub}_{var}_{year}.nc")
             with open(filename, 'wb') as f:
                 f.write(response.content)
-            print("Downloaded", filename)
+            if verbose:
+                print("Downloaded", filename)
             ds = xr.open_dataset(filename, engine='netcdf4')
         else:
             return None
@@ -97,11 +98,11 @@ def ozwald_8day_singleyear_gdata(var="Ssoil", latitude=-34.3890427, longitude=14
     return ds_region
 
 
-def ozwald_8day_multiyear(var="Ssoil", latitude=-34.3890427, longitude=148.469499, buffer=0.01, years=["2020", "2021"], stub="TEST", tmpdir=".", thredds=True):
+def ozwald_8day_multiyear(var="Ssoil", latitude=-34.3890427, longitude=148.469499, buffer=0.01, years=["2020", "2021"], stub="TEST", tmpdir=".", thredds=True, verbose=True):
     dss = []
     for year in years:
         if thredds:
-            ds_year = ozwald_8day_singleyear_thredds(var, latitude, longitude, buffer, year, stub, tmpdir)
+            ds_year = ozwald_8day_singleyear_thredds(var, latitude, longitude, buffer, year, stub, tmpdir, verbose=verbose)
         else:
             ds_year = ozwald_8day_singleyear_gdata(var, latitude, longitude, buffer, year)
         if ds_year:
@@ -110,7 +111,7 @@ def ozwald_8day_multiyear(var="Ssoil", latitude=-34.3890427, longitude=148.46949
     return ds_concat
 
 
-def ozwald_8day(variables=["Ssoil", "GPP"], lat=-34.3890427, lon=148.469499, buffer=0.01, start_year="2020", end_year="2021", outdir=".", stub="TEST", tmpdir='.', thredds=True, save_netcdf=True, plot=True):
+def ozwald_8day(variables=["Ssoil", "GPP"], lat=-34.3890427, lon=148.469499, buffer=0.01, start_year="2020", end_year="2021", outdir=".", stub="TEST", tmpdir='.', thredds=True, save_netcdf=True, plot=True, verbose=True):
     """Download 8day variables from OzWald at 500m resolution for the region/time of interest
 
     Parameters
@@ -129,19 +130,21 @@ def ozwald_8day(variables=["Ssoil", "GPP"], lat=-34.3890427, lon=148.469499, buf
         ds_concat: an xarray containing the requested variables in the region of interest for the time period specified
         A NetCDF file of this xarray gets downloaded to outdir/(stub)_ozwald_8day.nc'
     """
-    print(f"Starting ozwald_8day")
+    if verbose:
+        print(f"Starting ozwald_8day")
 
     dss = []
     years = [str(year) for year in list(range(int(start_year), int(end_year) + 1))]
     for variable in variables:
-        ds_variable = ozwald_8day_multiyear(variable, lat, lon, buffer, years, stub, tmpdir, thredds)
+        ds_variable = ozwald_8day_multiyear(variable, lat, lon, buffer, years, stub, tmpdir, thredds, verbose=verbose)
         dss.append(ds_variable)
     ds_concat = xr.merge(dss)
     
     if save_netcdf:
         filename = os.path.join(outdir, f'{stub}_ozwald_8day.nc')
         ds_concat.to_netcdf(filename)
-        print("Saved:", filename)
+        if verbose:
+            print("Saved:", filename)
 
     if plot:
         import matplotlib.pyplot as plt
@@ -157,7 +160,8 @@ def ozwald_8day(variables=["Ssoil", "GPP"], lat=-34.3890427, lon=148.469499, buf
         filename = os.path.join(outdir, f'{stub}_ozwald_8day.png')
         plt.savefig(filename, dpi=300, bbox_inches='tight')
         plt.close()
-        print("Saved:", filename)
+        if verbose:
+            print("Saved:", filename)
 
     return ds_concat
 

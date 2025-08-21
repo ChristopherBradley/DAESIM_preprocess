@@ -39,7 +39,7 @@ def aggregate_pixels(ds):
     return ds
 
 
-def daesim_forcing(outdir=".", stub="TEST"):
+def daesim_forcing(outdir=".", stub="TEST", verbose=True):
     """Merge the ozwald and silo netcdf's into a dataframe for input into DAESim
     
     Parameters
@@ -96,12 +96,13 @@ def daesim_forcing(outdir=".", stub="TEST"):
     # Save
     filepath = os.path.join(outdir, stub + "_DAESim_forcing.csv")
     df_ordered.to_csv(filepath)
-    print("Saved", filepath)
+    if verbose:
+        print("Saved", filepath)
 
     return df_ordered
 
 
-def daesim_soils(outdir=".", stub="Test", tmpdir="."):
+def daesim_soils(outdir=".", stub="Test", tmpdir=".", verbose=True):
     """Merge the soil tiffs into a csv required for DAESim
     
     Parameters
@@ -147,7 +148,8 @@ def daesim_soils(outdir=".", stub="Test", tmpdir="."):
     # Save
     filepath = os.path.join(outdir, stub + "_DAESim_Soils.csv")
     sorted_df.to_csv(filepath, index=False)
-    print("Saved", filepath)
+    if verbose:
+        print("Saved", filepath)
 
     return sorted_df
 

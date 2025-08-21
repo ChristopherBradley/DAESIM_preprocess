@@ -98,7 +98,7 @@ def soil_texture(outdir=".", stub="TEST", depth="5-15cm"):
 
     return soil_texture
 
-def slga_soils(variables=["Clay", "Sand", "Silt"], lat=-34.3890427, lon=148.469499, buffer=0.005, outdir="", stub="TEST",  depths=["5-15cm"]):
+def slga_soils(variables=["Clay", "Sand", "Silt"], lat=-34.3890427, lon=148.469499, buffer=0.005, outdir="", stub="TEST",  depths=["5-15cm"], verbose=True):
     """Download soil variables from CSIRO at 90m resolution for region of interest
     
     Parameters
@@ -115,7 +115,8 @@ def slga_soils(variables=["Clay", "Sand", "Silt"], lat=-34.3890427, lon=148.4694
         A Tiff file for each variable/depth specified
     
     """
-    print("Starting slga_soils")
+    if verbose:
+        print("Starting slga_soils")
     buffer = max(0.00001, buffer)
     bbox = [lon - buffer, lat - buffer, lon + buffer, lat + buffer]     # From my experimentation, the asris.csiro API allows a maximum bbox of about 40km (0.2 degrees in each direction)
     for depth in depths:
@@ -132,14 +133,17 @@ def slga_soils(variables=["Clay", "Sand", "Silt"], lat=-34.3890427, lon=148.4694
             while attempt < max_retries:
                 try:
                     download_tif(bbox, url, identifier, filename)
-                    print(f"Downloaded {filename}")
+                    if verbose:
+                        print(f"Downloaded {filename}")
                     break
                 except Exception as e:
-                    print(f"Failed to download {variable} {depth}, attempt {attempt + 1} of {max_retries}", e)
+                    if verbose:
+                        print(f"Failed to download {variable} {depth}, attempt {attempt + 1} of {max_retries}", e)
                     attempt += 1
                     if attempt < max_retries:
                         delay = base_delay * (2 ** attempt) # Exponential backoff
-                        print(f"Retrying in {delay:.2f} seconds...")
+                        if verbose:
+                            print(f"Retrying in {delay:.2f} seconds...")
                         time.sleep(delay)
 
 def parse_arguments():

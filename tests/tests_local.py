@@ -3,6 +3,7 @@
 print("Starting tests_local.py")
 
 import os
+import time
 
 from DAESIM_preprocess.terrain_tiles import terrain_tiles
 from DAESIM_preprocess.topography import topography
@@ -18,6 +19,7 @@ if not os.path.exists('tmpdir'):
 if not os.path.exists('outdir'):
     os.mkdir('outdir')
 
+start = time.time()
 
 # Basic tests for quickly checking all the API's
 ds = ozwald_daily(variables=['Uavg'], lat=-34.3890427, lon=148.469499, buffer=0.01, start_year="2020", end_year="2020", outdir="outdir", stub="TEST", tmpdir="tmpdir", thredds=True, save_netcdf=True, plot=True)
@@ -233,3 +235,18 @@ slga_soils(variables=["Clay", "Silt", "Sand", "pH_CaCl2", "Bulk_Density", "Avail
 
 df = daesim_soils(outdir="outdir", stub="TEST", tmpdir="tmpdir")
 assert os.path.exists("outdir/TEST_DAESim_Soils.csv")
+
+# Testing no print statements when verbose is false
+print("Re-running every command with verbose=False")
+df = daesim_forcing(outdir="outdir", stub="TEST", verbose=False)
+df = daesim_soils(outdir="outdir", stub="TEST", tmpdir="tmpdir", verbose=False)
+ds = ozwald_daily(variables=['Uavg'], lat=-34.3890427, lon=148.469499, buffer=0.01, start_year="2020", end_year="2020", outdir="outdir", stub="TEST", tmpdir="tmpdir", thredds=True, save_netcdf=True, plot=True, verbose=False)
+ds = ozwald_8day(variables=["Ssoil"], lat=-34.3890427, lon=148.469499, buffer=0.01, start_year="2020", end_year="2020", outdir="outdir", stub="TEST", tmpdir="tmpdir", thredds=True, save_netcdf=True, plot=True, verbose=False)
+ds = terrain_tiles(lat=-34.3890427, lon=148.469499, buffer=0.005, outdir="outdir", stub="TEST", tmpdir="tmpdir", tile_level=14, interpolate=True, verbose=False)
+ds = topography(outdir="outdir", stub="TEST", verbose=False)
+slga_soils(variables=["Clay"], lat=-34.3890427, lon=148.469499, buffer=0.005, outdir="tmpdir", stub="TEST",  depths=["5-15cm"], verbose=False)
+ds = silo_daily(variables=["radiation"], lat=-34.3890427, lon=148.469499, buffer=0.1, start_year="2020", end_year="2020", outdir="outdir", stub="TEST", tmpdir="tmpdir", thredds=None, save_netcdf=True, plot=True, verbose=False)
+print("Finished Tests")
+
+end = time.time()
+print(f"Tests took {end - start} seconds to complete.")
